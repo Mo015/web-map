@@ -1,0 +1,1229 @@
+
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="initial-scale=1,maximum-scale=1,user-scalable=no"
+  />
+  <title>Realistic water visualization in 3D | Sample | ArcGIS API for
+    JavaScript 4.25</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/dark/main.css" />
+  <script
+  type="module"
+  src="https://js.arcgis.com/calcite-components/1.0.0-beta.97/calcite.esm.js"
+></script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://js.arcgis.com/calcite-components/1.0.0-beta.97/calcite.css"
+/>
+  <script src="pro1.js"></script>
+  <script>
+    var dojoConfig = {
+      packages: [
+        {
+          name: "geolocate",
+          location: "//2gis.github.io/mock-geolocation/dist",
+          main: "geolocate"
+        }
+      ]
+    };
+  </script>
+  <script src="https://js.arcgis.com/4.25/"></script>
+</head>
+<style>
+  
+
+@media (min-width: 576px) {  }
+
+
+@media (min-width: 768px) { }
+
+
+@media (min-width: 992px) { }
+
+
+@media (min-width: 1200px) {  }
+@media (max-width: 575.98px) { }
+
+@media (max-width: 767.98px) { }
+
+@media (max-width: 991.98px) { }
+
+@media (max-width: 1199.98px) {  }
+
+  html,
+  body{
+    padding: 0;
+    display: flex; justify-content:baseline;
+    margin: 0;
+    height: 100%;
+    position: absolute;
+    width:100%;
+    right: 0%;
+    background-image:linear-gradient(60deg,rgb(67, 13, 147),rgb(13, 0, 41),rgb(13, 0, 41),rgb(67, 13, 147));
+  }
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;left: 0%;
+    position: absolute;
+    width:85%;
+    right: 0%;
+background-color: #FFF;
+  }
+
+  #view2Div {
+    padding: 0;right: 0%;
+    padding-bottom: 0;
+    position: fixed;
+    height: 20%;
+    width:15%;   
+
+  }
+
+  #menu {
+    background-color: #430707;
+    padding: 0cm;
+    width:15%;
+    height: 80%;top: 20%;
+    position: fixed; right: 0%;
+    background-image:linear-gradient(45deg,rgb(67, 13, 147),rgb(13, 0, 41),rgb(13, 0, 41),rgb(67, 13, 147));
+border-radius: 2%;
+  }
+
+#heattmapp{
+  color: red;right:0%; bottom: 0%;   font-size: large;
+
+}
+#slider-container{
+width:100%; height:21%;
+}
+  #reflection
+  {
+  color: rgba(255, 255, 255, .5);
+  display: inline-block;
+  margin: 0px;
+  position: relative;
+  text-decoration: none;
+  padding-top:0px 0;
+
+
+}
+  #reflection:before {
+    content: attr(data-text);
+    border-top: 3px solid orange;
+    position: absolute;
+    left: 0;
+    top: -3px;
+    color: #FFF;
+    white-space: nowrap;
+    width: 0%;
+    overflow: hidden;
+    padding-top:0px 0;
+    transition: .4s;
+  }
+  #reflection:hover:before {
+  width: 100%;
+  }
+
+#declutters {
+  color: rgba(255, 255, 255, .5);
+  display: inline-block;
+  margin: 0px;
+  position: relative;
+  text-decoration: none;
+  padding-top:0px 0; font-size: medium; width: 100%;
+
+
+}
+  #declutters:before {
+    content: attr(data-text);
+    border-top: 3px solid orange;
+    position: absolute;
+    left: 0;
+    top: -3px;
+    color: #FFF;
+    white-space: nowrap;
+    width: 0%;
+    overflow: hidden;
+    padding-top:0px 0;
+    transition: .4s;
+  }
+  #declutters:hover:before {
+  width: 100%;
+  }
+
+#rscene{
+  color: rgba(255, 255, 255, .5);
+  display:  inline-block;
+  margin: 0px;
+  position: relative;justify-content:baseline;
+  text-decoration: none;
+  padding-top:0px 0;  font-size: xx-small;}
+
+
+
+  #rscene:before {
+    content: attr(data-text);
+    border-top: 3px solid orange;
+    position: absolute;
+    left: 0;
+    top: -3px;
+    color: #FFF;
+    white-space: nowrap;
+    width: 0%;
+    overflow: hidden;
+    padding-top:0px 0;
+    transition: .4s;
+  }
+  #rscene:hover:before {
+  width: 100%;
+  }
+
+  #waveSlider {
+    height: 38px;
+    margin-top: 1.8em;
+  }
+
+  .color-btn {
+    border: 0.2px solid rgb(43, 0, 215);
+    width: 40px;
+    height: 15px;
+    cursor: pointer;
+  }
+
+  .color-btn:hover {
+    width: 45px;
+    height:20px;
+    transition-duration: 0.6s;
+    border-radius: 30%;
+    border: solid #000acb;
+  }
+
+  #navy {
+    background-color: #25427c;
+  }
+
+  #green {
+    background-color: #039962;
+  }
+
+  #turqoise {
+    background-color: #a2f9f5;
+  }
+
+
+
+      #cityStyle label {
+        padding-right: 10px;font-size: xx-small;
+        cursor: pointer;width: 3cm;
+      }   
+
+  
+    select {
+      font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+  .sassy-theme .esri-widget,
+  .sassy-theme .esri-widget--button,
+  .sassy-theme .esri-menu,
+  .sassy-theme .esri-popup__main-container,
+  .sassy-theme .esri-popup .esri-popup__pointer-direction,
+  .sassy-theme .esri-popup .esri-popup__button,
+  .sassy-theme .esri-button,
+  .sassy-theme .esri-input,
+  .sassy-theme .esri-widget a {
+    background-image:linear-gradient(60deg,rgb(67, 13, 147),rgb(13, 0, 41),rgb(13, 0, 41),rgb(67, 13, 147));
+    color: rgb(31, 167, 221); 
+  }
+
+  .sassy-theme .esri-widget--button:focus,
+  .sassy-theme .esri-widget--button:hover,
+  .sassy-theme .esri-menu li:focus,
+  .sassy-theme .esri-menu li:hover {
+    background-color: rgb(31, 244, 244);
+    color: #fff;
+  }
+
+  .sassy-theme .esri-button:focus,
+  .sassy-theme .esri-button:hover {
+    color: #fff;
+  }
+
+  .sassy-theme .esri-search__input::-moz-placeholder {
+    color: #ccc;
+    opacity: 1;
+  }
+
+  .sassy-theme .esri-search__input:-ms-input-placeholder {
+    color: #ccc;
+  }
+
+  .sassy-theme .esri-search__input::-webkit-input-placeholder {
+    color: #ccc;
+  }
+
+ 
+    #menu2 {
+    padding: 0cm;  height: 10%;
+  }
+
+  #menu2 > div {
+    padding: 0.4em; 
+  }
+</style>
+<script>require([
+    "geolocate","esri/widgets/Directions",
+        "esri/layers/RouteLayer","esri/layers/GraphicsLayer",
+    "esri/core/reactiveUtils","esri/renderers/HeatmapRenderer","esri/core/promiseUtils","esri/renderers/UniqueValueRenderer", "esri/widgets/Locate","esri/widgets/Search", "esri/widgets/NavigationToggle", "esri/widgets/Compass", "esri/widgets/Track", "esri/WebMap", "esri/widgets/Editor", "esri/widgets/HistogramRangeSlider",
+    "esri/smartMapping/statistics/histogram","esri/Graphic",
+
+    "esri/WebScene", "esri/views/GroundView", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/layers/ElevationLayer", "esri/widgets/ShadowCast",
+    "esri/widgets/ScaleRangeSlider", "esri/widgets/Popup", "esri/widgets/LineOfSight",
+    "esri/widgets/Legend", "esri/Map", "esri/widgets/ElevationProfile",
+    "esri/views/MapView", "esri/widgets/DirectLineMeasurement3D",
+    "esri/views/SceneView", "esri/widgets/Fullscreen", "esri/layers/SceneLayer",
+    "esri/widgets/Expand", "esri/webscene/SunLighting", "esri/webscene/VirtualLighting",
+    "esri/widgets/AreaMeasurement3D", "esri/widgets/Weather",
+    "esri/layers/FeatureLayer", "esri/widgets/CoordinateConversion", "esri/widgets/Daylight",
+    "esri/widgets/Slider", "esri/widgets/ScaleBar", "esri/widgets/LayerList",
+    "esri/widgets/BasemapGallery", "esri/widgets/Swipe", "esri/widgets/Zoom"
+  ], (geolocate,Directions,RouteLayer,GraphicsLayer,reactiveUtils,HeatmapRenderer,promiseUtils,UniqueValueRenderer,Locate, Search, NavigationToggle, Compass, Track, WebMap, Editor, HistogramRangeSlider, histogram,Graphic, WebScene, GroundView, LabelClass, LabelSymbol3D, ElevationLayer, ShadowCast, ScaleRangeSlider, Popup, LineOfSight, Legend, Map,
+    ElevationProfile, MapView, DirectLineMeasurement3D, SceneView, Fullscreen, SceneLayer,
+    Expand, SunLighting, VirtualLighting, AreaMeasurement3D, Weather, FeatureLayer,
+    CoordinateConversion, Daylight, Slider, ScaleBar, LayerList, BasemapGallery, Swipe, Zoom) => {
+
+    /***********
+    * webscene 
+    ************/
+
+
+    const map = new Map({
+      basemap: "hybrid",
+    });
+    const webscene = new WebScene({
+      portalItem: {
+        id: "fe4a019ab8fc483cb8344ba4bbd9ce41"
+      }
+    });
+    const view = new SceneView({
+      map: webscene,
+      container: "viewDiv",  
+      center: [31.479367, 30.584346],
+      zoom: 15,
+      ui: {
+        components: ["attribution"] // replace default set of UI components
+      }
+    });
+    let scenelayedr = new SceneLayer({
+url :"https://tiles.arcgis.com/tiles/U26uBjSD32d7xvm2/arcgis/rest/services/new_scene%D9%8A%D9%81%D8%A7%D9%8A%D9%8A/SceneServer"
+,});
+webscene.add(scenelayedr)
+
+
+
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    // waterLayer
+    const waterLayer = new FeatureLayer({
+      portalItem: {
+        id: "5a2f2c8799044d9d9195976d3a7715d9"
+      }, elevationInfo: {
+        mode: "absolute-height",
+        offset: 15
+      }, renderer: {
+        type: "simple",
+        symbol: {
+          type: "polygon-3d",
+          symbolLayers: [{
+            type: "water",
+            waveDirection: 180,
+            color: "#325B68",
+            waveStrength: "moderate",
+            waterbodySize: "large"
+          }]
+        }
+      }
+    });
+
+
+    webscene.add(waterLayer);
+    
+
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    // slider water
+    const slider = new Expand({
+    content: new Slider({
+        container: "waveSlider",
+        min: 0,
+        max: 360,
+        visibleElements: {
+            labels: true
+        },
+        precision: 0,
+        values: [260]
+    })
+  }); slider.on("thumb-drag", (event) => {
+    const value = parseInt(event.value);
+    const renderer = waterLayer.renderer.clone();
+    renderer.symbol.symbolLayers.getItemAt(0).waveDirection = value;
+    waterLayer.renderer = renderer;
+  });
+
+  const waveStrengthRadio =
+    document.getElementsByName("waveStrengthRadio");
+
+  for (let i = 0; i < waveStrengthRadio.length; i++) {
+    const element2 = waveStrengthRadio[i];
+    element2.addEventListener("change", (event) => {
+        const renderer = waterLayer.renderer.clone();
+        renderer.symbol.symbolLayers.getItemAt(0).waveStrength =
+            event.target.value;
+        waterLayer.renderer = renderer;
+    });
+  }
+
+  function setWaterColor(color) {
+    const renderer = waterLayer.renderer.clone();
+    renderer.symbol.symbolLayers.getItemAt(0).color = color;
+    waterLayer.renderer = renderer;
+  }
+
+  document.getElementById("navy").addEventListener("click", () => {
+    setWaterColor("#25427c");
+  });
+  document.getElementById("green").addEventListener("click", () => {
+    setWaterColor("#039962");
+  });
+  document.getElementById("turqoise").addEventListener("click", () => {
+    setWaterColor("#a2f9f5");
+  });
+
+  document
+    .getElementById("reflection")
+    .addEventListener("click", (event) => {
+        view.environment.lighting.waterReflectionEnabled =
+            event.target.checked;
+  });
+
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+// heatmap
+const colorStops = [
+  { ratio: 0, color: "rgba(255, 0, 0, 0)" ,},
+
+  { ratio: 1 / 40, color: "blue" },
+    { ratio: 40 /70, color: "red" },
+    { ratio: 70 / 80, color: "green" },
+  ];
+
+  const heatmapRenderer = new HeatmapRenderer({
+    legendOptions: {
+      minLabel: "Few",
+      maxLabel: "Frequent"
+    },
+    colorStops: colorStops,
+    referenceScale: null,
+    maxDensity: 0.0035,
+    radius: 35,
+    minDensity: 0
+  });
+  const popupTemplate = {
+    // autocasts as new PopupTemplate()
+    title: "Traffic incident #{OBJECTID}",
+    content: "<p>{NEAR_ANGLE}</p>" // Show year and month
+  };
+
+  const incidentsLayer = new FeatureLayer({
+    portalItem: {
+      id: "17483b9f7dd843399c3c7439e8335569"
+    }  ,   popupTemplate: popupTemplate,
+    opacity: 0.75,
+    renderer: heatmapRenderer
+  });
+  webscene.add(incidentsLayer);
+  view.whenLayerView(incidentsLayer).then((layerView) => {
+          const field = "NEAR_ANGLE";
+          const min = -179;
+          const max = 170;
+
+          histogram({
+            layer: incidentsLayer,
+            field: field,
+            numBins: 100,
+            minValue: min,
+            maxValue: max
+          }).then((histogramResponse) => {
+            const slider1 = new HistogramRangeSlider({
+              bins: histogramResponse.bins,
+              min: min,
+              max: max,
+              values: [min, max],
+              excludedBarColor: "#524e4e",
+              rangeType: "between",
+              container: document.getElementById("slider-container")
+            });
+
+            slider1.on(
+              ["thumb-change", "thumb-drag", "segment-drag"],
+              (event) => {
+                filterByHistogramRange(field).catch((error) => {
+                  if (error.name !== "AbortError") {
+                    console.error(error);
+                  }
+                });
+              }
+            );
+
+            const filterByHistogramRange = promiseUtils.debounce((field) => {
+              layerView.filter = {
+                where: slider1.generateWhereClause(field)
+              };
+            });
+
+            const filterExpand = new Expand({
+              view: view,
+              content: document.getElementById("controls"),
+              expandIconClass: "esri-icon-filter",
+              expanded: true
+            });
+
+            view.ui.add(filterExpand, "hio");
+          });
+        });
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    // Search
+    let searchWidget = new Search({
+        view: view
+    });
+    view.ui.add(searchWidget, { position: "top-left", index: 0, sources: ["https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"] });
+
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    // Zoom
+    let zoom = new Zoom({
+      view: view
+    });
+    view.ui.add(zoom, "top-left",{index:2})
+    
+// navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    // navigationToggle
+    let navigationToggle = new NavigationToggle({
+      view: view
+    }); view.ui.add(navigationToggle, "top-left",{index:1})
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    // compass
+    let compass = new Compass({
+      view: view
+    }); view.ui.add(compass, "top-left",{index:0})
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    // locateWidget
+    let locateWidget = new Locate({
+  view: view,   // Attaches the Locate button to the view
+});
+
+view.ui.add(locateWidget, "top-left");
+
+    // located animation(لحركة)
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // located animation
+    // stubGeolocation();
+
+    // const track = new Track({
+    //   view: view,
+    //   goToLocationEnabled: false // disable this since we want to control what happens after our location is acquired
+    // });
+    // view.ui.add(track, "top-left",{index:4});
+
+    // view.when(() => {
+    //   let prevLocation = view.center;
+    //   track.on("track", () => {
+    //     const location = track.graphic.geometry;
+    //     view
+    //       .goTo({
+    //         center: location,
+    //         tilt: 50,
+    //         scale: 250,
+    //         heading: 360 - getHeading(location, prevLocation), // only applies to SceneView
+    //         rotation: 360 - getHeading(location, prevLocation) // only applies to MapView 
+    //       })
+    //       .catch((error) => {
+    //         if (error.name != "AbortError") {
+    //           console.error(error);
+    //         }
+    //       });
+    //     prevLocation = location.clone();
+    //   });
+    //   track.stop();
+    // });
+    // function getHeading(point, oldPoint) {
+    //   // get angle between two points
+    //   const angleInDegrees =
+    //     (Math.atan2(point.y - oldPoint.y, point.x - oldPoint.x) * 180) /
+    //     Math.PI;
+    //   // move heading north
+    //   return -90 + angleInDegrees;
+    // }
+    // // geolocation simulator
+    // function stubGeolocation() {
+    //   let coords = [
+    //     {
+    //       lng: 31.480119,
+    //       lat: 30.585613
+    //     }, {
+    //       lng: 31.480220,
+    //       lat:30.585936
+    //     }, {
+    //       lng:31.479258,
+    //       lat: 30.586428
+    //     }, {
+    //       lng: 31.480501,
+    //       lat:30.586538
+    //     }, {
+    //       lng:31.480536,
+    //       lat: 30.587706
+    //     }, {
+    //       lng: 31.481024,
+    //       lat: 30.588449
+    //     }, {
+    //       lng: 31.482134,
+    //       lat: 30.589159
+    //     }, {
+    //       lng:31.483658,
+    //       lat:30.589401
+    //     }, 
+
+    //   ],
+    //     currentCoordIndex = 0;
+
+    //   geolocate.use();
+
+    //   setInterval(() => {
+    //     geolocate.change(coords[currentCoordIndex]);
+    //     currentCoordIndex = (currentCoordIndex + 1) % coords.length;
+    //   }, 4500);
+    // }
+
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    // mapview2 (الخريطة الركنية)
+    const view2 = new MapView({
+      container: "view2Div",
+      map: map,
+      constraints: {
+        // Disable zoom snapping to get the best synchronization
+        snapToZoom: false
+      }
+    });
+    view2.ui.remove("zoom");
+
+    const views = [view, view2];
+    let active;
+
+    const sync = (source) => {
+      if (!active || !active.viewpoint || active !== source) {
+        return;
+      }
+
+      for (const view of views) {
+        if (view !== active) {
+          view.viewpoint = active.viewpoint;
+        }
+      }
+    };
+
+    for (const view of views) {
+      view.watch(["interacting", "animation"], () => {
+        active = view;
+        sync(active);
+      });
+
+      view.watch("viewpoint", () => sync(view));
+    }
+  
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    // scaleBar
+    let scaleBar = new ScaleBar({
+      view: view,
+    });
+    view.ui.add(scaleBar, "bottom-left");
+
+    /*********
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    * weather
+    **********/
+    const weather = new Expand({
+      content: new Weather({
+        view: view,
+        expanded: true,
+      })
+    });
+    view.ui.add(weather, "top-right",);
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    // directline
+    let directline = new Expand({
+      content: new DirectLineMeasurement3D({
+        view: view,expanded: true
+      })
+    });
+    view.ui.add(directline, "top-right",);
+
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    // daylight
+    const daylight = new Expand({
+      content: new Daylight({
+        view: view,expanded: true,
+        dateOrSeason: "season",
+      }),
+    }); view.ui.add(daylight, "top-right", { index: 1 });
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+    // layerList
+
+    const layerList = new Expand({
+      content: new LayerList({
+        view: view,
+        listItemCreatedFunction: (event) => {
+          const item = event.item;
+          if (item.layer.type != "group") {
+            // don't show legend twice
+            item.panel = {
+              content: "legend",
+              open: false
+            };
+          }
+        }
+      })
+    }); view.ui.add(layerList, "bottom-right", { index: 0 },);
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    // basemapGallery
+    let basemapGallery = new Expand({
+      content: new BasemapGallery({ view: view, title: "base map", group: "right", expanded: true })
+    }); view.ui.add(basemapGallery, "bottom-right", { index: 1 });
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    // Coordinate
+    let Coordinate = new Expand({
+      content: new CoordinateConversion({
+      view: view})
+    });
+    view.ui.add(Coordinate, "bottom-right");
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    // elevationProfile
+    const elevationProfile = new Expand({
+      content: new ElevationProfile({
+        view: view, profiles: [{
+          // displays elevation values from Map.ground
+          type: "ground", //autocasts as new ElevationProfileLineGround()
+          color: "#61d4a4",
+          title: "Ground elevation"
+        }, {
+          // displays elevation values from the input line graphic
+          type: "input", //autocasts as new ElevationProfileLineInput()
+          color: "#f57e42",
+          title: "Line elevation", exclude: [webscene.ground],
+          // displays elevation values from a custom source
+          type: "query",
+          source: new ElevationLayer({
+            url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/MtBaldy_Elevation/ImageServer"
+          }),
+          color: "#d46189",
+          title: "Custom elevation"
+        }]
+      })
+    });
+    view.ui.add(elevationProfile, "top-right");
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    // fullscreen
+    let fullscreen = new Fullscreen({
+      view: view,
+    });
+    view.ui.add(fullscreen, "top-left");
+
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    // lineOfSight
+    const lineOfSight = new Expand({
+      content: new LineOfSight({
+        view: view
+      })
+    });
+    view.ui.add(lineOfSight, "top-right");
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    // scaleRangeSlider
+    const scaleRangeSlider = new ScaleRangeSlider({
+      view: view,
+      layer: webscene,  // scale range of this layer sets initial minScale and maxScale
+      region: "EG", // preview thumbnail will be of Mexico
+    });    // to update the layer min/max scale based on the slider
+    scaleRangeSlider.watch(["minScale", "maxScale"], function (value, oldValue, name) {
+      webscene[name] = value;
+    });
+    view.ui.add(scaleRangeSlider, "bottom-left");
+
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  // icon properties
+  const verticalOffset = {
+screenLength: 40,
+maxWorldLength: 90,
+minWorldLength: 35
+};
+function getUniqueValueSymbol(name, color) {
+return {
+  type: "point-3d", // autocasts as new PointSymbol3D()
+  symbolLayers: [
+    {
+      type: "icon", // autocasts as new IconSymbol3DLayer()
+      resource: {
+        href: name
+      },
+      size: 20,
+      outline: {
+        color: "white",
+        size: 2
+      }
+    }
+  ],
+
+  verticalOffset: verticalOffset,
+
+  callout: {
+    type: "line", // autocasts as new LineCallout3D()
+    color: "white",
+    size: 2,
+    border: {
+      color: color
+    }
+  }
+};
+}
+const pointsRenderer = {
+type: "unique-value", // autocasts as new UniqueValueRenderer()
+field: "type",
+uniqueValueInfos: [
+  {
+    value: "level_crossing",
+    symbol: getUniqueValueSymbol(
+      "https://cdn.iconscout.com/icon/premium/png-256-thumb/ebook-bookstore-2720882-2259162.png?f=webp&w=256",
+      "#D13470"
+    )
+  },
+  {
+    value: "restaurant",
+    symbol: getUniqueValueSymbol(
+      "https://developers.arcgis.com/javascript/latest/sample-code/visualization-point-styles/live/Restaurant.png",
+      "#F97C5A"
+    )
+  },
+  {
+    value: "hospital",
+    symbol: getUniqueValueSymbol(
+      "https://cdn.iconscout.com/icon/premium/png-256-thumb/bank-3432574-2864462.png?f=webp&w=256",
+      "#884614"
+    )
+  },
+  {
+    value: "bank",
+    symbol: getUniqueValueSymbol(
+      "https://cdn.iconscout.com/icon/premium/png-256-thumb/mosque-136-240422.png?f=webp&w=256",
+      "#56B2D6"
+    )
+  },
+  {
+    value: "cafe",
+    symbol: getUniqueValueSymbol(
+      "https://cdn.iconscout.com/icon/premium/png-256-thumb/atm-1433963-1211997.png?f=webp&w=256",
+      "#40C2B4"
+    )
+  }
+]
+};
+const pointsLayer = new FeatureLayer({
+url: "https://services3.arcgis.com/U26uBjSD32d7xvm2/arcgis/rest/services/1point/FeatureServer",
+title: "Touristic attractions",
+elevationInfo: {
+  // elevation mode that will place points on top of the buildings or other SceneLayer 3D objects
+  mode: "relative-to-scene",
+},
+renderer: pointsRenderer,
+outFields: ["*"],
+// feature reduction is set to selection because our scene contains too many points and they overlap
+featureReduction: {
+  type: "selection"
+},
+labelingInfo: [
+  {
+    labelExpressionInfo: {
+      value: "{Name}"
+    },
+    symbol: {
+      type: "label-3d", // autocasts as new LabelSymbol3D()
+      symbolLayers: [
+        {
+          type: "text", // autocasts as new TextSymbol3DLayer()
+          material: {
+            color: "white"
+          },
+          // we set a halo on the font to make the labels more visible with any kind of background
+          halo: {
+            size: 1,
+            color: [50, 50, 50]
+          },
+          size: 14
+        }
+      ]
+    }
+  }
+]
+});
+
+webscene.add(pointsLayer);
+
+document.getElementById("cityStyle")
+.addEventListener("change", (event) => {
+  if (event.target.id === "declutter") {
+    const type = {
+      type: "selection"
+    };
+    pointsLayer.featureReduction = event.target.checked ? type : null;
+  }else if (event.target.id === "relative-to-scene") {
+    const mode = event.target.checked
+      ? "relative-to-scene"
+      : "relative-to-ground";
+    pointsLayer.elevationInfo = {
+      mode: mode
+    };
+  }
+});
+view.ui.add(document.getElementById("cityStyle"), "menu");
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    // shadowCast
+    const shadowCast = new Expand({
+      content: new ShadowCast({
+        view: view, color: [50, 50, 50, 0.7]
+      })
+    });
+    view.ui.add(shadowCast, "top-right");
+    view.ui.add("name1",);
+
+  view.ui.add(view2);
+
+    });
+
+</script>
+<body class="sassy-theme">
+  <div id="viewDiv">
+</div>
+  <div id="viewDiv2">
+    <div id="view2Div"></div><div id="menu" class="esri-widget"><li style="color: red; font-style: italic; font-family:cursive; margin-bottom:0%;margin-top:0%; font-size: medium; padding: 0.1cm;">Wave direction</li>
+      <div style="width: 100%;border-bottom-style: dotted;border-top-style: dotted; border-bottom:2px  #8c68db; border-top:  #8c68db;border-right: solid #8c68db;border-left:
+      solid #8c68db;  border-radius: 25%; margin-bottom:2%;margin-top:0%; font-size:medium;padding-left: 0%; padding-top: 19%; padding-bottom: 5%;margin-right: 5%; " id="waveSlider"></div>
+      <h4 style="margin-bottom:0%;margin-top:0%; font-size: medium; padding: 0.2cm;">Wave strength</h4>
+      <input style=" padding: 0.2cm;"  type="radio" name="waveStrengthRadio" value="calm" id="calm" /><label style="cursor: pointer; font-size: small; "
+        for="calm">Calm</label>
+      <input type="radio" name="waveStrengthRadio" value="rippled" id="rippled" /><label style="cursor: pointer; font-size: small; padding-top: 0"
+        for="rippled">Rippled</label><br>
+      <input  type="radio" name="waveStrengthRadio" value="slight" id="slight" /><label
+        style="cursor: pointer; font-size: small;padding-top: 0 " for="slight">Slight</label>
+      <input type="radio" name="waveStrengthRadio" value="moderate" id="moderate" checked /><label
+        style="cursor: pointer; font-size: small;padding-top: 0" for="moderate">Moderate</label>
+      <h4 style=" margin-bottom:1%;font-size: medium; margin-top:3%;padding: 0.2cm;">Dominant
+        color</h4>
+      <button style="margin-left: 0.4cm;" id="navy" class="color-btn"></button>
+      <button id="green" class="color-btn"></button>
+      <button id="turqoise" class="color-btn"></button>
+      <br />
+      <input type="checkbox" id="reflections" checked /><label
+      href="#" data-text="Water Reflections" id="reflection" style="cursor: pointer; margin-bottom:0%;margin-top:3%; font-size: small; font-weight: bold;" for="reflections">Water Reflections</label>
+      <hr style="height: -2cm; border:solid #661ac8;margin-top: 0%;margin-bottom: 0%;padding-top: 0%;margin-bottom: 5%;">
+      <div id="cityStyle" style=" padding-bottom: 0%; top: 5%;
+right: 0%; margin-bottom: 0% ;">
+      <li style="width: 100%; top: 5%; margin-top: 0%; margin-bottom: 0%;font-style: italic; font-family:cursive;  font-size: large;  color: red;">icon 3D</li><br>
+      <input type="checkbox" id="declutter" name="mode" checked />
+      <label id="declutters" href="#" data-text="Declutter view"  for="declutter">Declutter view</label><br>
+      <input type="checkbox" id="relative-to-scene" name="mode" checked />
+      <label id="rscene"  href="#" data-text="Align icon to building height"  for="relative-to-scene">Align icon to building height</label>
+      <div id="menu2" class="esri-widget esri-component">
+        <hr style="height: -2cm; border:solid #661ac8;margin-top: 0%;margin-bottom: 0%;padding-top: 0%;margin-bottom: 5%;">
+
+</div>
+    </div>
+    <li id="heattmapp">Heat Map</li>
+      <a id="slider-container">
+
+        </a>
+     
+
+
+      </div>
+    </div>
+</body>
+</html>
